@@ -32,6 +32,22 @@ var fnc = function(){
         return this;
     };
 
+    Pipe.prototype.pluck = function(propName){
+        var pluckFunc = function(item){
+            for(var prop in item){
+                if(item.hasOwnProperty(prop)){
+                    if(prop === propName){
+                        return item[prop];
+                    }
+                }
+            }
+            return item;
+        };
+
+        this.transforms.push(pluckFunc);
+        return this;
+    };
+
     Pipe.prototype.reduce = function(reduceFunc){
         this.reduceFnc = reduceFunc;
         return this;

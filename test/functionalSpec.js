@@ -33,6 +33,18 @@ describe('pipes', function(){
             expect(JSON.stringify(actual)).toBe(JSON.stringify(expected));
         });
     });
+
+    describe('map', function(){
+        it('pluck the a property from an array', function(){
+            var stooges = [{name : 'moe', age : 40}, {name : 'larry', age : 50}, {name : 'curly', age : 60}];
+            var pipe = new fnc.Pipe(stooges);
+            var expected = [40,50,60];
+
+            var actual = pipe.pluck('age').result();
+
+            expect(JSON.stringify(actual)).toBe(JSON.stringify(expected));
+        });
+    });
     describe('reduce', function(){
         it('should reduce an array to a single item', function(){
             var pipe = new fnc.Pipe([1,2,3]);
