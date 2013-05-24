@@ -2,10 +2,11 @@ var fnc = function(){
     var each = function(that, collection, func){
         if((Array.isArray && Array.isArray(collection)) || collection instanceof Array){
             for(var i = 0, len = collection.length;i<len; i++){
-                func.call(that,collection[i],i);
+                func.call(that,collection[i],i, len);
             };
         }else {
             var i = 0;
+
             for(var prop in collection){
                 if(collection.hasOwnProperty(prop)){
                     func.call(that,collection[prop],i++);
@@ -13,6 +14,14 @@ var fnc = function(){
             }
         }
     }
+
+    var reduceCollection = function(that,collection, reduceFunc){
+        var accumVal = 0;
+        each(that,collection,function(item){
+            accumVal = reduceFunc(accumVal,item);
+        });
+        return accumVal;
+    };
 
     var Pipe = function(array){
         this.collection = array;
@@ -23,22 +32,30 @@ var fnc = function(){
         return this;
     };
 
+    Pipe.prototype.reduce = function(reduceFunc){
+        this.reduceFnc = reduceFunc;
+        return this;
+    };
+
     Pipe.prototype.result = function(){
         var result = [];
+
+        var clonedtransforms = this.transforms.concat([]);
+
         each(this,this.collection,function(current){
             if(typeof current !== 'undefined'){
-                each(this,this.transforms,function(currentTransform){
+                each(this,clonedtransforms,function(currentTransform){
                     if(typeof currentTransform !== 'undefined'){
-                        console.info('before');
-                        console.info(current);
-                        current = currentTransform(current);
-                        console.info('after');
-                        console.info(current);
+                            current = currentTransform(current);
                     }
                 });
                 result.push(current);
             }
         })
+
+        if(this.reduceFnc){
+            return reduceCollection(this,result,this.reduceFnc);
+        }
 
         return result;
     };
